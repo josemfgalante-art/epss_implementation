@@ -3,11 +3,10 @@
 ## Group
 
 | Name | Student number |
-|---|---|
-| | |
-| | |
-| | |
-| | |
+| José Galante | 1120342 |
+| Sebastião Minau | 1111133 |
+| Dinis Barata | 1109759 |
+| Nolan Rosa | 1110781 |
 
 ## How to run
 
@@ -49,8 +48,22 @@ use that may be made of the Copernicus information or data it contains.
 
 ## Answers (section 3.7)
 
-*To be completed.*
+Reservoir design
+
+The objective was to determine the maximum reservoir water level required to achieve the selected supply reliability.
+
+For the present climate conditions, the calculated maximum water level was approximately 7.33 m, corresponding to a maximum storage volume of approximately 0.656 hm³.
+
+Under a scenario with a temperature increase of 2 °C, the required maximum water level increased to approximately 7.89 m.
+
+The results indicate that higher temperatures increase potential evapotranspiration and reduce the water available for reservoir inflow. Consequently, a larger reservoir capacity is required to maintain the same supply reliability.
+
+Results figure [Reservoir reliability](reliability.png)
+The simulation evaluates reservoir reliability for different maximum water levels (hmax).
+
+The results show that increasing the maximum water level improves both time-based (Rt) and volumetric (Rv) reliability. A maximum water level of approximately 7.33 m is required to achieve the target reliability of 90%.
 
 ## AI declaration
-
-Tools used and what for:
+ChatGPT was used to help understand programming concepts, explain error messages, troubleshoot Python code, and review parts of the notebook implementation.
+It was also used to support the interpretation of the hydrological calculations and to improve the clarity of the project documentation.
+The results and code were checked by the group before submission.

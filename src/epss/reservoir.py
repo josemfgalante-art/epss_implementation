@@ -1,8 +1,10 @@
+
 """Monthly reservoir mass balance (sheet eqs. 10-13).
 
 Units: volumes hm³, levels m, areas km², evaporation mm/month.
 1 hm³/m = 1 km², so dV/dh from the h-V table is directly an area in km².
 """
+
 import numpy as np
 import pandas as pd
 
@@ -23,32 +25,69 @@ class Reservoir:
         return np.interp(h, self.hv.h_m, self.hv.v_hm3)
 
     def level(self, v):
-        """Level (m) at volume v (hm³), inverse interpolation of the h-V curve."""
-        # TODO: Level from volume: inverse interpolation of the h-V curve (np.interp with volumes as x).
-        # In: v (hm³)
-        # Out: h (m)
-        raise NotImplementedError('Level from volume: inverse interpolation of the h-V curve (np.interp with volumes as x).')
+        """Level (m) at volume v (hm³)."""
+        return np.interp(v, self.hv.v_hm3, self.hv.h_m)
 
     def area(self, v):
-        """Surface area (km²) at volume v: fixed A0, or dV/dh at level(v)."""
-        # TODO: Surface area: the fixed A0 if it was given; otherwise A = dV/dh from the h-V table
-        #       (np.gradient), interpolated at level(v).
-        # In: v (hm³)
-        # Out: A (km²); note that 1 hm³/m = 1 km²
-        raise NotImplementedError('Surface area: the fixed A0 if it was given; otherwise A = dV/dh from the h-V table (np.gradient), interpolated at level(v).')
+        """Surface area (km²) at volume v: fixed A0, or dV/dh."""
+        if self.area0 is not None:
+            return self.area0
+
+        dVdh = np.gradient(self.hv.v_hm3, self.hv.h_m)
+
+        return np.interp(self.level(v), self.hv.h_m, dVdh)
 
     def simulate(self, inflow, evap_mm, demand, eflow, v0=None):
-        """Month-by-month simulation. All inputs are pd.Series on the same monthly index.
+        """Month-by-month simulation.
 
-        inflow, demand, eflow (target): hm³/month; evap_mm: mm/month.
-        Order per month: inflow -> e-flow -> evaporation -> supply -> spill.
-        Returns a DataFrame with inflow, eflow, evaporation, supply, deficit, spill,
-        volume and level (end of month).
+        All inputs are pd.Series on the same monthly index.
+        Order: inflow -> e-flow -> evaporation -> supply -> spill.
         """
-        # TODO: Monthly mass balance (sheet 3.5). Each month: 1) V* = V + Qin; 2) e-flow = min(target,
-        #       Qin); 3) evaporation = evap_mm * area(V) / 1000, never below Vmin; 4) supply = min(D,
-        #       water above Vmin), deficit = D - supply; 5) spill above Vmax. Start at v0 (default Vmax).
-        # In: inflow, demand, eflow targets (hm³/month), evap_mm (mm/month), pd.Series on the same index
-        # Out: DataFrame with columns inflow, eflow, evaporation, supply, deficit, spill, volume, level
-        #      (end of month)
-        raise NotImplementedError('Monthly mass balance (sheet 3.5). Each month: 1) V* = V + Qin; 2) e-flow = min(target, Qin); 3) evaporation = evap_mm * area(V) / 1000, never below Vmin; 4) supply = min(D, water above Vmin), deficit = D - supply; 5) spill above Vmax. Start at v0 (default Vmax).')
+
+        # Initial reservoir volume
+        V = self.vmax if v0 is None else v0
+        results = []
+
+        for date in inflow.index:
+
+            # Volume at the beginning of the month
+            V_start = V
+
+            Qin = inflow.loc[date]
+            D = demand.loc[date]
+            E = evap_mm.loc[date]
+            target = eflow.loc[date]
+
+            # 1. Add inflow
+            V = V + Qin
+
+            # 2. Environmental flow
+            eco = min(target, Qin)
+            V = V - eco
+
+            # 3. Evaporation
+            evaporation = E * self.area(V_start) / 1000
+            evaporation = min(evaporation, max(0, V - self.vmin))
+            V = V - evaporation
+
+            # 4. Water supply
+            supply = min(D, max(0, V - self.vmin))
+            deficit = D - supply
+            V = V - supply
+
+            # 5. Spill
+            spill = max(0, V - self.vmax)
+            V = V - spill
+
+            results.append({
+                "inflow": Qin,
+                "eflow": eco,
+                "evaporation": evaporation,
+                "supply": supply,
+                "deficit": deficit,
+                "spill": spill,
+                "volume": V,
+                "level": self.level(V)
+            })
+
+        return pd.DataFrame(results, index=inflow.index)

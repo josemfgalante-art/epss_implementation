@@ -24,12 +24,53 @@ def case():
     return inp, par, exp
 
 
+
+
+
 def test_catchment(case):
     inp, par, exp = case
-    pet = pet_monthly(inp.t_c, inp.tmax_c, inp.tmin_c, par["latitude_deg"])
-    tm = thornthwaite_mather(inp.p_mm, pet, par["smax_mm"])
+
+    pet = pet_monthly(
+        inp.t_c,
+        inp.tmax_c,
+        inp.tmin_c,
+        par["latitude_deg"]
+    )
+
+    tm = thornthwaite_mather(
+        inp.p_mm,
+        pet,
+        par["smax_mm"]
+    )
+
+    # Compare calculated and expected results
+    comparison = pd.DataFrame({
+        "P": inp.p_mm,
+        "PET": pet,
+        "AET_actual": tm["aet"],
+        "AET_expected": exp["aet"],
+        "Soil_actual": tm["soil"],
+        "Soil_expected": exp["soil"],
+        "L_actual": tm["deficit"],
+        "L_expected": exp["deficit"]
+    })
+
+    print("\nComparison of results:")
+    print(comparison.iloc[50:60].round(3).to_string())
+
+    # Check results against reference data
     for col in ["pet", "aet", "soil", "runoff"]:
-        np.testing.assert_allclose(tm[col], exp[col], rtol=1e-6, atol=1e-9)
+        print("Checking:", col, flush=True)
+
+        np.testing.assert_allclose(
+            tm[col],
+            exp[col],
+            rtol=1e-6,
+            atol=1e-9
+        )
+
+
+
 
 
 @pytest.mark.parametrize("name", ["fixed", "variable"])

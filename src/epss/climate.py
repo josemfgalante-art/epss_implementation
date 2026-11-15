@@ -6,11 +6,7 @@ import xarray as xr
 
 def kelvin_to_celsius(t):
     """Temperature in K -> °C."""
-    # TODO: Convert the temperature from kelvin to degrees Celsius.
-    # In: t in K (number, array or pd.Series)
-    # Out: t in °C, same type
-    raise NotImplementedError('Convert the temperature from kelvin to degrees Celsius.')
-
+    return t - 273.15
 
 def to_monthly_mm(tp):
     """ERA5-Land monthly-mean precipitation (m/day) -> monthly total (mm/month).
@@ -21,7 +17,7 @@ def to_monthly_mm(tp):
     #       x days in each month (tp.index.days_in_month).
     # In: tp (pd.Series, m/day, monthly DatetimeIndex)
     # Out: pd.Series in mm/month, same index
-    raise NotImplementedError('Convert precipitation from mean daily rate (m/day) to monthly total (mm/month): x 1000 and x days in each month (tp.index.days_in_month).')
+    return tp * 1000 * tp.index.days_in_month
 
 
 def to_meteoraster(da, variable="unknown", units="unknown"):

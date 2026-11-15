@@ -27,16 +27,22 @@ def hargreaves(tmean, tmax, tmin, ra):
     #       17.8) * sqrt(Tmax - Tmin).
     # In: tmean, tmax, tmin (°C), ra (mm/day): numbers, arrays or pd.Series
     # Out: PET (mm/day)
-    raise NotImplementedError('Hargreaves equation (sheet eq. 1) with Ra already in mm/day: PET = 0.0023 * Ra * (T + 17.8) * sqrt(Tmax - Tmin).')
-
+    return 0.0023 * ra * (tmean + 17.8) * np.sqrt(tmax - tmin)
 
 def pet_monthly(tmean, tmax, tmin, lat_deg):
     """Monthly PET (mm/month) from monthly temperatures (°C, pd.Series at month start).
 
     Ra is taken on the 15th of each month and converted with 0.408 (MJ m-2 day-1 -> mm/day).
     """
-    # TODO: Monthly PET: Ra on the 15th of each month (extraterrestrial_radiation x 0.408 -> mm/day),
-    #       then hargreaves(), then x days in month.
-    # In: tmean, tmax, tmin (pd.Series, °C, month-start index), lat_deg (°)
-    # Out: pd.Series named 'pet' (mm/month), same index
-    raise NotImplementedError('Monthly PET: Ra on the 15th of each month (extraterrestrial_radiation x 0.408 -> mm/day), then hargreaves(), then x days in month.')
+    # Calculate radiation for the 15th of each month
+    dates = tmean.index + pd.Timedelta(days=14)
+
+    ra = extraterrestrial_radiation(lat_deg, dates.dayofyear) * 0.408
+
+    # Calculate daily PET
+    pet_daily = hargreaves(tmean, tmax, tmin, ra)
+
+    # Convert daily PET to monthly PET
+    pet = pet_daily * tmean.index.days_in_month
+
+    return pd.Series(pet, index=tmean.index, name="pet")
