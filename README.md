@@ -50,9 +50,9 @@ use that may be made of the Copernicus information or data it contains.
 
 ## Reservoir design
 
-The objective was to determine the maximum reservoir water level required to achieve the selected supply reliability of 90%.
+The objective was to determine the maximum reservoir water level required to achieve a target time reliability of 90%.
 
-For the present climate conditions, the calculated maximum water level was approximately **7.33 m**, corresponding to a maximum storage volume of approximately **0.656 hm³**.
+For the present climate conditions, the calculated maximum water level was approximately **6.76 m**, corresponding to a maximum storage volume of approximately **0.537 hm³**.
 
 Under a scenario with a temperature increase of 2 °C, the required maximum water level increased to approximately **7.48 m**.
 
@@ -64,9 +64,11 @@ The results indicate that higher temperatures increase potential evapotranspirat
 
 The simulation evaluates reservoir reliability for different maximum water levels (hmax).
 
-The results show that increasing the maximum water level improves both time-based (Rt) and volumetric (Rv) reliability. A maximum water level of approximately 7.33 m is required to achieve the target reliability of 90% under present climate conditions.
+The results show that increasing the maximum water level improves both time-based (Rt) and volumetric (Rv) reliability. Under present climate conditions, a maximum water level of approximately **6.76 m** is required to achieve the target time reliability of 90%.
 
-Under the +2 °C scenario, the required maximum water level increases to approximately 7.48 m, highlighting the impact of higher temperatures on reservoir storage requirements.
+The sensitivity analysis also shows that reducing irrigation demand by 25% decreases the required height to approximately 6.34 m, while increasing demand by 25% raises it to approximately 7.14 m.
+
+Under the +2 °C scenario, the required maximum water level increases to approximately **7.48 m**, highlighting the impact of higher temperatures on reservoir storage requirements.
 
 ## AI declaration
 ChatGPT was used to help understand programming concepts, explain error messages, troubleshoot Python code, and review parts of the notebook implementation.
